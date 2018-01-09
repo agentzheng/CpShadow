@@ -1,72 +1,38 @@
-#include<iostream>
-#include <string>
-#include <ParserDom.h>
+#include <windows.h>
+#include <Wininet.h>
+#include <iostream> 
+using namespace std; 
+#pragma comment(lib, "Wininet.lib") 
 
-#include <winsock2.h>  
-#pragma comment(lib, "ws2_32.lib")  
-
-using namespace std;
-using namespace htmlcxx;
-
-
-
-int main()
-
+void Download(char url[]); 
+int main(int argc, TCHAR* argv[], TCHAR* envp[])
 {
-	//解析一段Html代码
-
-	string html = "<html><body><p>hey</p><a href=\"nihao\">sss</a></body></html>";
-
-	HTML::ParserDom parser;
-
-	tree<HTML::Node> dom = parser.parseTree(html);
-
-	//输出整棵DOM树
-
-	cout << dom << endl;
-
-	//输出树中所有的超链接节点
-
-	tree<HTML::Node>::iterator it = dom.begin();
-
-	tree<HTML::Node>::iterator end = dom.end();
-
-	for (; it != end; ++it)
-
-	{
-
-		if (_stricmp(it->tagName().c_str(), "A") == 0)
-
+	int nRetCode = 0; char url[1000];//存放URL地址 //用户键入quit时退出 
+	while(cin >> url && strcmp(url, "quit") != 0) 
+	{ 
+		try {
+			cout << "目标URL：" << url << endl; Download(url); 
+		} catch (char* e)//显示出错信息 
 		{
-
-			it->parseAttributes();
-
-			cout << it->attribute("href").second << endl;
-
-		}
-
-	}
-
-	//输出所有的文本节点
-
-	it = dom.begin();
-
-	end = dom.end();
-
-	for (; it != end; ++it)
-
-	{
-
-		if ((!it->isTag()) && (!it->isComment()))
-
-		{
-
-			cout << it->text();
-
-		}
-
-	}
-
-	cout << endl;
-	system("pause");
+			cout << e << endl << endl; 
+		} 
+	} return nRetCode; 
+} 
+void Download(char url[]) 
+{
+	char buffer[100000];//下载文件的缓冲区 
+	DWORD bytes_read;//下载的字节数 //打开一个internet连接 
+	HINTERNET internet=InternetOpen("HTTP Downloader", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL); 
+	if(!internet) 
+		throw "InternetOpen error!"; 
+	if(!internet) throw "InternetOpen error!"; //打开一个http url地址 
+	HINTERNET file_handle = InternetOpenUrl(internet, url, NULL, 0, INTERNET_FLAG_RELOAD, 0); 
+	if(!file_handle) 
+		throw "InternetOpenUrl error! - Maybe you should add Http:// or Ftp://"; //从url地址中读取文件内容到缓冲区buffer 
+	BOOL b = InternetReadFile(file_handle, buffer, 100000, &bytes_read); 
+	if(!b) 
+		throw "InternetReadFile error!"; 
+	buffer[bytes_read] = 0; 
+	cout << buffer << endl << endl; //关闭连接 
+	InternetCloseHandle(internet); 
 }
