@@ -6,10 +6,11 @@
 #include<vld.h>
 #include<vector>
 #include<map>
+#include<windows.h>
 #include"Configer.hpp"
+
 #pragma comment(lib, "Wininet.lib")
 
-#include<windows.h>
 using namespace htmlcxx;
 using namespace std;
 
@@ -60,7 +61,8 @@ string get_by_id(tree<HTML::Node>& dom,const string& html_content,const string& 
 
 
 
-int main() {
+int main() 
+{
 	char buffer[MY_MAX_BUFFER_SIZE];
 	int i = 0;
 		cout << "Start Fetching resources from Sever..." << endl;
@@ -89,8 +91,6 @@ int main() {
 				for (map<string, string>::iterator it2 = it->begin(); it2 != it->end(); it2++)
 					it2->second = get_by_id(dom, html_content, it2->second);
 			}
-
-
 
 			if (configer.GenerateNew(template_data))
 			{
